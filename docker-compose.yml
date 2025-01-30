@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  slim-app:
+    container_name: slim-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+    ports:
+      - "8080:8080"
+    command: php -S 0.0.0.0:8080 -t public
