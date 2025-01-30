@@ -2,17 +2,24 @@
 
 declare(strict_types=1);
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use App\Controllers\TrackController;
+use App\Middleware\JsonResponseHeader;
+use DI\Container;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = AppFactory::create();
+$container = new Container();
+AppFactory::setContainer($container);
 
-$app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello world!");
-    return $response;
-});
+$app = AppFactory::create();
+$app->addErrorMiddleware(true, true, true)
+    ->getDefaultErrorHandler()
+    ->forceContentType('application/json');
+
+$app->add(new JsonResponseHeader());
+
+$app->get('/track/visit', TrackController::class . ':visit');
+$app->get('/track/visit/{id:[0-9]+}', TrackController::class . ':visitOne');
 
 $app->run();
