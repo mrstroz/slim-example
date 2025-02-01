@@ -12,3 +12,14 @@ services:
     ports:
       - "8080:8080"
     command: php -S 0.0.0.0:8080 -t public
+
+  mongo:
+    image: mongo:latest
+    container_name: slim-mongo-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=slim
+    restart: unless-stopped
+    ports:
+      - "27017:27017" 
