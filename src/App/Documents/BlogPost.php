@@ -3,11 +3,9 @@
 namespace App\Documents;
 
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
-#[ODM\Document]
+#[ODM\Document(collection: 'blog_post')]
 class BlogPost
 {
     public function __construct(
