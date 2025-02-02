@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Documents\Comments;
+use App\Documents\Tags;
 use App\TestService;
+use Dom\Comment;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -14,9 +17,11 @@ class TrackController
 {
 
     public function __construct(
-        public TestService $testService,
+        public TestService     $testService,
         public DocumentManager $dm
-    ) {}
+    )
+    {
+    }
 
     public function all(Request $request, Response $response, array $args): Response
     {
@@ -37,7 +42,8 @@ class TrackController
             return $response->withStatus(404);
         }
 
-        $response->getBody()->write(json_encode($data));
+
+        $response->getBody()->write(json_encode($data->getTags()->toArray()));
         return $response;
     }
 
@@ -45,11 +51,17 @@ class TrackController
     {
         $body = $request->getParsedBody();
 
-        $post = new BlogPost(
-            title: $body['title'] ?? '',
-            body: $body['body'] ?? '',
-        );
+        $comment = new Comments();
+        $comment->text='COMMENT';
 
+        $tag = new Tags();
+        $tag->tag='TAG';
+
+        $post = new BlogPost();
+        $post->addComment($comment);
+        $post->addTag($tag);
+
+        $this->dm->persist($comment);
         $this->dm->persist($post);
         $this->dm->flush();
 

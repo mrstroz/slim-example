@@ -62,6 +62,40 @@ class AppDocumentsBlogPostHydrator implements HydratorInterface
             $hydratedData['body'] = $return;
         }
 
+        // ReferenceMany & EmbedMany
+        $mongoData = $data['comments'] ?? null;
+
+        if ($mongoData !== null && ! is_array($mongoData)) {
+            throw HydratorException::associationTypeMismatch('App\Documents\BlogPost', 'comments', 'array', gettype($mongoData));
+        }
+
+        $return = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $this->class->fieldMappings['comments']);
+        $return->setHints($hints);
+        $return->setOwner($document, $this->class->fieldMappings['comments']);
+        $return->setInitialized(false);
+        if ($mongoData) {
+            $return->setMongoData($mongoData);
+        }
+        $this->class->reflFields['comments']->setValue($document, $return);
+        $hydratedData['comments'] = $return;
+
+        // ReferenceMany & EmbedMany
+        $mongoData = $data['tags'] ?? null;
+
+        if ($mongoData !== null && ! is_array($mongoData)) {
+            throw HydratorException::associationTypeMismatch('App\Documents\BlogPost', 'tags', 'array', gettype($mongoData));
+        }
+
+        $return = $this->dm->getConfiguration()->getPersistentCollectionFactory()->create($this->dm, $this->class->fieldMappings['tags']);
+        $return->setHints($hints);
+        $return->setOwner($document, $this->class->fieldMappings['tags']);
+        $return->setInitialized(false);
+        if ($mongoData) {
+            $return->setMongoData($mongoData);
+        }
+        $this->class->reflFields['tags']->setValue($document, $return);
+        $hydratedData['tags'] = $return;
+
         // Field(type: "date_immutable")
         if (isset($data['createdAt']) || (! empty($this->class->fieldMappings['createdAt']['nullable']) && array_key_exists('createdAt', $data))) {
             $value = $data['createdAt'];
