@@ -4,46 +4,44 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Documents\BlogPost;
 use App\Documents\Comments;
 use App\Documents\Tags;
-use App\TestService;
-use Dom\Comment;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use App\Documents\BlogPost;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Component\Serializer\Serializer;
 
 class TrackController
 {
 
     public function __construct(
-        public TestService     $testService,
-        public DocumentManager $dm
+        public DocumentManager $dm,
+        public Serializer      $serializer
     )
     {
+
     }
 
     public function all(Request $request, Response $response, array $args): Response
     {
         $data = $this->dm->getRepository(BlogPost::class)->findAll();
 
-        $body = json_encode($data);
+        $body = $this->serializer->serialize($data, 'json', ['groups' => ['default']]);
         $response->getBody()->write($body);
         return $response;
     }
 
     public function one(Request $request, Response $response, array $args): Response
     {
-        $body = json_encode(['id' => $args['id']]);
-
         $data = $this->dm->find(BlogPost::class, $args['id']);
         if (!$data) {
             $response->getBody()->write(json_encode(['error' => 'Not found']));
             return $response->withStatus(404);
         }
 
-
-        $response->getBody()->write(json_encode($data->getTags()->toArray()));
+        $body = $this->serializer->serialize($data, 'json', ['groups' => ['default']]);
+        $response->getBody()->write($body);
         return $response;
     }
 
@@ -52,10 +50,10 @@ class TrackController
         $body = $request->getParsedBody();
 
         $comment = new Comments();
-        $comment->text='COMMENT';
+        $comment->text = 'COMMENT';
 
         $tag = new Tags();
-        $tag->tag='TAG';
+        $tag->tag = 'TAG';
 
         $post = new BlogPost();
         $post->addComment($comment);
@@ -65,7 +63,8 @@ class TrackController
         $this->dm->persist($post);
         $this->dm->flush();
 
-        $response->getBody()->write(json_encode($post));
+        $body = $this->serializer->serialize($post, 'json', ['groups' => ['default']]);
+        $response->getBody()->write($body);
         return $response;
     }
 }

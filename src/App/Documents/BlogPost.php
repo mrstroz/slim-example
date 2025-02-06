@@ -7,26 +7,33 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ODM\Document(collection: 'blog_post')]
 class BlogPost
 {
     #[ODM\Id]
+    #[Groups(['default'])]
     private ?string $id = null;
 
     #[ODM\Field(type: "string")]
-    public string $title;
+    #[Groups(['default'])]
+    private string $title;
 
     #[ODM\Field(type: "string")]
+    #[Groups(['default'])]
     private string $body;
 
     #[ReferenceMany(storeAs: "id", targetDocument: Comments::class)]
-    public Collection $comments;
+    #[Groups(['default'])]
+    private Collection $comments;
 
     #[ODM\EmbedMany(targetDocument: Tags::class)]
-    public Collection $tags;
+    #[Groups(['default'])]
+    private Collection $tags;
 
     #[ODM\Field(type: "date_immutable")]
+    #[Groups(['default'])]
     private DateTimeImmutable $createdAt;
 
     public function __construct(string $title = '', string $body = '')
