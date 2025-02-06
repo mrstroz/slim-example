@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Symfony\Component\Serializer\Serializer;
 
-class TrackController
+class TestController
 {
 
     public function __construct(
@@ -23,7 +23,7 @@ class TrackController
 
     }
 
-    public function all(Request $request, Response $response, array $args): Response
+    public function read(Request $request, Response $response, array $args): Response
     {
         $data = $this->dm->getRepository(BlogPost::class)->findAll();
 
@@ -32,7 +32,7 @@ class TrackController
         return $response;
     }
 
-    public function one(Request $request, Response $response, array $args): Response
+    public function readOne(Request $request, Response $response, array $args): Response
     {
         $data = $this->dm->find(BlogPost::class, $args['id']);
         if (!$data) {
@@ -45,7 +45,7 @@ class TrackController
         return $response;
     }
 
-    public function save(Request $request, Response $response, array $args): Response
+    public function create(Request $request, Response $response, array $args): Response
     {
         $body = $request->getParsedBody();
 

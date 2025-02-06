@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Controllers\TrackController;
+use App\Controllers\TestController;
 use App\Middleware\JsonResponseHeader;
 use DI\ContainerBuilder;
 use Slim\Factory\AppFactory;
@@ -30,10 +30,10 @@ $app->addErrorMiddleware(true, true, true)
     ->forceContentType('application/json');
 $app->add(new JsonResponseHeader());
 
-$app->group('/track', function ($app) {
-    $app->get('/all', TrackController::class . ':all');
-    $app->get('/one/{id:[0-9a-z]+}', TrackController::class . ':one');
-    $app->post('/save', TrackController::class . ':save');
+$app->group('/test', function ($app) {
+    $app->get('', TestController::class . ':read');
+    $app->get('/{id:[0-9a-z]+}', TestController::class . ':readOne');
+    $app->post('', TestController::class . ':create');
 });
 
 $app->run();
